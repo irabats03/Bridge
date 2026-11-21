@@ -1,7 +1,9 @@
+import { useLayoutEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Activity, CalendarDays, HeartHandshake, MessageCircle, Sparkles } from 'lucide-react';
 import { BridgeArt } from './Art';
 import { psychologists } from '../data/psychologists';
+import { useMotion } from '../MotionContext';
 import '../story.css';
 
 const chapters = [
@@ -49,8 +51,64 @@ function SupportPreview() {
 
 const visuals = [BridgeArt, ChatPreview, InsightPreview, SupportPreview];
 
+const openingCards = [
+  [-27, -19], [21, 14], [-15, -11], [36, 20], [-33, -16], [13, 9]
+];
+let openingAvailable = window.location.pathname === '/' && !window.location.hash;
+
+function useDeckOpening() {
+  const { motion } = useMotion();
+  const [opening, setOpening] = useState(false);
+
+  useLayoutEffect(() => {
+    if (!motion) {
+      openingAvailable = false;
+      setOpening(false);
+      return;
+    }
+    if (!openingAvailable) return;
+    openingAvailable = false;
+    if (window.scrollY > 1 || !matchMedia('(min-height: 610px)').matches) return;
+
+    const events = new AbortController();
+    const { signal } = events;
+    setOpening(true);
+
+    function finish() {
+      clearTimeout(timeout);
+      events.abort();
+      setOpening(false);
+    }
+
+    const timeout = setTimeout(finish, 1430);
+    function finishOnScroll() {
+      if (window.scrollY > 1) finish();
+    }
+    window.addEventListener('scroll', finishOnScroll, { passive: true, signal });
+    window.addEventListener('wheel', finish, { passive: true, signal });
+    window.addEventListener('pointerdown', finish, { passive: true, signal });
+    window.addEventListener('keydown', finish, { signal });
+    return () => {
+      clearTimeout(timeout);
+      events.abort();
+    };
+  }, [motion]);
+
+  return motion && opening;
+}
+
+function OpeningCards() {
+  return <div className="story-opening-deck">
+    {openingCards.map(([x, turn], order) => <div className="story-opening-card" key={order}
+      style={{ '--deal-order': order, '--fall-x': x + '%', '--fall-turn': turn + 'deg' }}>
+      <img src="/bridge.svg" alt="" width="72" height="72" draggable={false} />
+    </div>)}
+  </div>;
+}
+
 export function BridgeStory({ selectChapter }) {
-  return <section className="bridge-story" aria-labelledby="hero-title">
+  const opening = useDeckOpening();
+  return <section className="bridge-story" aria-labelledby="hero-title" data-opening={opening ? '' : undefined}>
     <div className="story-stage">
       <div className="story-backdrops" aria-hidden="true">
         {chapters.map(chapter => <div className="story-backdrop" key={chapter.name} />)}
@@ -65,7 +123,9 @@ export function BridgeStory({ selectChapter }) {
             </div>)}
           </div>
           <div className="story-visuals" aria-hidden="true">
-            {visuals.map((Visual, index) => <div className="story-visual" key={chapters[index].name}><Visual /></div>)}
+            {visuals.map((Visual, index) => <div className="story-visual" key={chapters[index].name}
+              style={{ '--deal-order': visuals.length - index - 1 }}><Visual /></div>)}
+            {opening && <OpeningCards />}
           </div>
         </div>
         <div className="story-footer">
