@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta id="bridge-theme-color" name="theme-color" content="#FFFFFF" />
+    <script>
+      let bridgeTheme = null;
+      try { bridgeTheme = localStorage.getItem('bridge-theme'); } catch {}
+      bridgeTheme ||= matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = bridgeTheme;
+      if (bridgeTheme === 'dark') document.getElementById('bridge-theme-color').content = '#172526';
+    </script>
+    <meta name="description" content="Bridge helps parents better understand and support children aged 4–18." />
+    <link rel="icon" href="/bridge.svg" type="image/svg+xml" />
+    <title>Bridge | Bridging Gaps to Understand Better.</title>
+  </head>
+  <body><div id="root"></div><script type="module" src="/src/main.jsx"></script></body>
+</html>

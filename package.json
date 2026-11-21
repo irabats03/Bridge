@@ -1,0 +1,23 @@
+{
+  "name": "bridge-parent-guide",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/package-worker.mjs",
+    "check": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/lexend": "^5.2.0",
+    "lucide-react": "^0.577.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.0",
+    "tailwindcss": "^4.1.0",
+    "vite": "^7.2.0"
+  }
+}
